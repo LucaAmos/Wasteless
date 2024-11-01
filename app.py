@@ -1,5 +1,4 @@
 import streamlit as st
-import plotly.express as px
 
 # Initialisiere die Mitbewohner und Rechnungen
 if 'roommates' not in st.session_state:
@@ -9,7 +8,7 @@ if 'bills' not in st.session_state:
 
 def add_roommate(name):
     # Füge einen neuen Mitbewohner hinzu
-    st.session_state.roommates.append({'name': name, 'balance': 0, 'total_spent': 0})
+    st.session_state.roommates.append({'name': name, 'balance': 0})
 
 def add_bill(amount, payer, shared_with):
     # Füge eine Rechnung hinzu und aktualisiere die Salden
@@ -27,51 +26,44 @@ def update_balances(amount, payer, shared_with):
     for r in st.session_state.roommates:
         if r['name'] == payer:
             r['balance'] += amount
-            r['total_spent'] += amount  # Aktualisiere die Gesamtausgaben des Zahlers
 
-st.title("Mitbewohner Abrechnung")
+# Titel und Beschreibung
+st.title("💸 Mitbewohner Abrechnung")
+st.markdown("Verwalte die gemeinsamen Ausgaben und behalte den Überblick über die Salden deiner Mitbewohner.")
 
-# Mitbewohner hinzufügen
-st.header("Mitbewohner hinzufügen")
-new_roommate = st.text_input("Name des Mitbewohners:")
-if st.button("Hinzufügen"):
-    if new_roommate:
-        add_roommate(new_roommate)
-        st.success(f"{new_roommate} wurde hinzugefügt!")
-    else:
-        st.error("Bitte einen Namen eingeben.")
+# Abschnitt: Mitbewohner hinzufügen
+st.subheader("👥 Mitbewohner hinzufügen")
+with st.form(key='add_roommate_form'):
+    new_roommate = st.text_input("Name des Mitbewohners:")
+    submit_button = st.form_submit_button("Hinzufügen")
+    if submit_button:
+        if new_roommate:
+            add_roommate(new_roommate)
+            st.success(f"{new_roommate} wurde hinzugefügt!")
+        else:
+            st.error("Bitte einen Namen eingeben.")
 
-# Rechnungen hinzufügen
-st.header("Rechnung hinzufügen")
-amount = st.number_input("Betrag:", min_value=0.0)
-payer = st.selectbox("Zahler:", [r['name'] for r in st.session_state.roommates])
-shared_with = st.multiselect("Geteilt mit:", [r['name'] for r in st.session_state.roommates if r['name'] != payer])
+# Abschnitt: Rechnung hinzufügen
+st.subheader("🧾 Rechnung hinzufügen")
+with st.form(key='add_bill_form'):
+    amount = st.number_input("Betrag:", min_value=0.0, step=0.01, format="%.2f")
+    payer = st.selectbox("Zahler:", [r['name'] for r in st.session_state.roommates])
+    shared_with = st.multiselect("Geteilt mit:", [r['name'] for r in st.session_state.roommates if r['name'] != payer])
 
-if st.button("Rechnung hinzufügen"):
-    if amount > 0 and shared_with:
-        add_bill(amount, payer, shared_with)
-        st.success("Rechnung hinzugefügt!")
-    else:
-        st.error("Bitte einen Betrag und mindestens einen Mitbewohner auswählen.")
+    if st.form_submit_button("Rechnung hinzufügen"):
+        if amount > 0 and shared_with:
+            add_bill(amount, payer, shared_with)
+            st.success("Rechnung wurde hinzugefügt!")
+        else:
+            st.error("Bitte einen Betrag und mindestens einen Mitbewohner auswählen.")
 
-# Abrechnung anzeigen
-st.header("Abrechnung")
+# Abschnitt: Abrechnung anzeigen
+st.subheader("📊 Aktuelle Abrechnung")
 if st.session_state.roommates:
     for roommate in st.session_state.roommates:
-        st.write(f"{roommate['name']}: {roommate['balance']:.2f} CHF")
+        st.write(f"**{roommate['name']}**: {roommate['balance']:.2f} CHF")
 else:
-    st.write("Keine Mitbewohner hinzugefügt.")
+    st.info("Noch keine Mitbewohner hinzugefügt.")
 
-# Grafische Darstellung der Ausgaben
-st.header("Ausgabenübersicht")
-
-if st.session_state.roommates:
-    # Namen und Ausgaben der Mitbewohner für das Kuchendiagramm extrahieren
-    names = [r['name'] for r in st.session_state.roommates]
-    total_spent = [r['total_spent'] for r in st.session_state.roommates]
-    
-    if sum(total_spent) > 0:  # Nur anzeigen, wenn Ausgaben vorhanden sind
-        fig = px.pie(values=total_spent, names=names, title="Anteil der Ausgaben pro Mitbewohner")
-        st.plotly_chart(fig)
-    else:
-        st.write("Es wurden noch keine Ausgaben erfasst.")
+# Hinweis zu den Funktionen
+st.caption("🚀 Tipp: Nutze die Buttons und Eingabefelder, um Mitbewohner und Rechnungen hinzuzufügen.")
