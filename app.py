@@ -1,7 +1,5 @@
-pip install matplotlib
-
 import streamlit as st
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Initialisiere die Mitbewohner und Rechnungen
 if 'roommates' not in st.session_state:
@@ -73,10 +71,7 @@ if st.session_state.roommates:
     total_spent = [r['total_spent'] for r in st.session_state.roommates]
     
     if sum(total_spent) > 0:  # Nur anzeigen, wenn Ausgaben vorhanden sind
-        fig, ax = plt.subplots()
-        ax.pie(total_spent, labels=names, autopct='%1.1f%%', startangle=90)
-        ax.axis('equal')  # Kreisdiagramm kreisförmig darstellen
-        st.pyplot(fig)
+        fig = px.pie(values=total_spent, names=names, title="Anteil der Ausgaben pro Mitbewohner")
+        st.plotly_chart(fig)
     else:
         st.write("Es wurden noch keine Ausgaben erfasst.")
-
