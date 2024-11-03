@@ -11,12 +11,31 @@ def wg_setup():
     
     # WG Name eingeben
     wg_name = st.text_input("Enter your WG name:")
-    roommates = st.text_area("Enter names of roommates (comma-separated):")
+    
+    # Eingabe für Mitbewohner
+    roommate_name = st.text_input("Enter the name of a roommate:")
+    
+    # Liste der Mitbewohner
+    if 'roommates' not in st.session_state:
+        st.session_state.roommates = []
+
+    if st.button("Add Roommate"):
+        if roommate_name:
+            st.session_state.roommates.append(roommate_name.strip())
+            st.success(f"{roommate_name} has been added to the roommates list!")
+            st.experimental_rerun()  # Die Seite neu laden, um die aktuelle Liste anzuzeigen
+        else:
+            st.error("Please enter a name for the roommate.")
+
+    # Zeige die Liste der Mitbewohner an
+    st.subheader("👥 Roommates:")
+    if st.session_state.roommates:
+        for roommate in st.session_state.roommates:
+            st.write(f"- {roommate}")
 
     if st.button("Save WG Details"):
-        if wg_name and roommates:
+        if wg_name and st.session_state.roommates:
             st.session_state.wg_name = wg_name
-            st.session_state.roommates = [name.strip() for name in roommates.split(',')]
             st.success("WG details saved! Click the button below to proceed.")
             st.session_state.page = "inventory"
         else:
