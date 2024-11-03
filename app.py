@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Setze deinen Spoonacular API-Schlüssel hier ein
-api_key = 21c590f808c74caabbaa1494c6196e7a
+api_key = '21c590f808c74caabbaa1494c6196e7a'
 
 # Titel der App
 st.title("Wasteless")
