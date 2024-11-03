@@ -5,7 +5,7 @@ import requests
 api_key = 21c590f808c74caabbaa1494c6196e7a
 
 # Titel der App
-st.title("WasteLess")
+st.title("Wasteless")
 
 # Eingabefeld für die Zutaten
 ingredients = st.text_input("Gib die Zutaten ein (getrennt durch Kommas, z.B.: tomate, käse, basilikum):")
