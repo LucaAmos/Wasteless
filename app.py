@@ -1,3 +1,6 @@
+pip install pytesseract
+pip install matplotlib.pyplot
+
 import streamlit as st
 import matplotlib.pyplot as plt
 import requests
