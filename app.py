@@ -11,13 +11,13 @@ if 'wg_name' not in st.session_state:
 if 'roommates' not in st.session_state:
     st.session_state.roommates = []
 if 'inventory' not in st.session_state:
-    st.session_state.inventory = []
+    st.session_state.inventory = []  # [{'item': 'Tomatoes', 'amount': 2.5}]
 
 def add_roommate(name):
     st.session_state.roommates.append(name)
 
-def add_inventory_item(item):
-    st.session_state.inventory.append(item)
+def add_inventory_item(item, amount):
+    st.session_state.inventory.append({'item': item, 'amount': amount})
 
 def get_recipes(ingredients):
     params = {
@@ -48,10 +48,12 @@ if st.button("Add Roommate"):
 # WG Inventar hinzufügen
 st.header("🛒 Add Inventory Items")
 new_inventory_item = st.text_input("Add an item to the inventory:")
+item_amount = st.number_input("Enter the amount spent (CHF):", min_value=0.0)
+
 if st.button("Add Inventory Item"):
-    if new_inventory_item:
-        add_inventory_item(new_inventory_item)
-        st.success(f"{new_inventory_item} has been added to the inventory!")
+    if new_inventory_item and item_amount >= 0:
+        add_inventory_item(new_inventory_item, item_amount)
+        st.success(f"{new_inventory_item} has been added to the inventory with a cost of {item_amount:.2f} CHF!")
 
 # Zeige die Mitbewohner und das Inventar an
 st.subheader("👥 Roommates:")
@@ -63,8 +65,8 @@ else:
 
 st.subheader("🛒 Inventory:")
 if st.session_state.inventory:
-    for item in st.session_state.inventory:
-        st.write(f"- {item}")
+    for entry in st.session_state.inventory:
+        st.write(f"- {entry['item']} (Cost: {entry['amount']:.2f} CHF)")
 else:
     st.write("No inventory items added.")
 
@@ -72,11 +74,12 @@ else:
 st.header("🍽️ Find Recipes")
 if st.button("Get Recipes"):
     if st.session_state.inventory:
-        recipes = get_recipes(st.session_state.inventory)
+        ingredients = [entry['item'] for entry in st.session_state.inventory]
+        recipes = get_recipes(ingredients)
         if recipes:
             st.subheader("Found Recipes:")
             for recipe in recipes:
-                st.write(f"- {recipe['title']}")
+                st.write(f"- **{recipe['title']}** (Link: [View Recipe](https://spoonacular.com/recipes/{recipe['id']}))")
         else:
             st.write("No recipes found with these ingredients.")
     else:
