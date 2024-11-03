@@ -19,11 +19,11 @@ def wg_setup():
     if 'roommates' not in st.session_state:
         st.session_state.roommates = []
 
+    # Button zum Hinzufügen eines Mitbewohners
     if st.button("Add Roommate"):
         if roommate_name:
             st.session_state.roommates.append(roommate_name.strip())
             st.success(f"{roommate_name} has been added to the roommates list!")
-            st.experimental_rerun()  # Die Seite neu laden, um die aktuelle Liste anzuzeigen
         else:
             st.error("Please enter a name for the roommate.")
 
@@ -33,6 +33,7 @@ def wg_setup():
         for roommate in st.session_state.roommates:
             st.write(f"- {roommate}")
 
+    # Button zum Speichern der WG-Daten
     if st.button("Save WG Details"):
         if wg_name and st.session_state.roommates:
             st.session_state.wg_name = wg_name
@@ -105,3 +106,4 @@ if st.session_state.page == "setup":
     wg_setup()
 else:
     inventory_and_recipes()
+
